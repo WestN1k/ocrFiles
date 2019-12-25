@@ -20,7 +20,7 @@ public class FileOCR {
 
         } catch (TesseractException e) {
             System.err.println(e.getMessage());
+            return "not found";
         }
-        return "not found";
     }
 }
