@@ -4,8 +4,8 @@ import javafx.scene.control.Alert;
 import yamanov.gui.ShowAlert;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.UnsupportedEncodingException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class AddFromFile {
 
@@ -15,17 +15,20 @@ public class AddFromFile {
         this.pathToTess = pathToTess;
     }
 
-    public Value addFromFile(String filePath) throws FileNotFoundException, UnsupportedEncodingException {
+    public Value addFromFile(String filePath) {
         FileOCR ocr = new FileOCR();
         ParseString parse = new ParseString();
         ShowAlert showAlert = new ShowAlert();
         File pathToTessdata = new File(pathToTess);
-        if ( pathToTessdata.exists() && pathToTessdata.isDirectory()) {
+        Path path = Paths.get(filePath);
+        Path filename = path.getFileName();
+
+        if (pathToTessdata.exists() && pathToTessdata.isDirectory()) {
             if (!filePath.isBlank()) {
                 if (filePath.endsWith(".jpg") || filePath.endsWith(".png")) {
                     try {
                         String result = ocr.getStringFromFile(filePath, pathToTess);
-                        return parse.parseData(result);
+                        return parse.parseData(result, filename.toString());
                     } catch (Exception e) {
                         showAlert.showAlert(e.getMessage(), Alert.AlertType.ERROR);
                     }

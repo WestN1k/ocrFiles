@@ -11,11 +11,11 @@ public class ToCSV extends IOException {
         OutputStreamWriter file = new OutputStreamWriter(new FileOutputStream(csvPath, true), "Windows-1251");
         try {
             CSVWriter writer = new CSVWriter(file, ';',
-                                            CSVWriter.DEFAULT_QUOTE_CHARACTER,
-                                            CSVWriter.DEFAULT_ESCAPE_CHARACTER,
-                                            CSVWriter.DEFAULT_LINE_END
-                                            );
-            for (Value item: values) {
+                    CSVWriter.DEFAULT_QUOTE_CHARACTER,
+                    CSVWriter.DEFAULT_ESCAPE_CHARACTER,
+                    CSVWriter.DEFAULT_LINE_END
+            );
+            for (Value item : values) {
                 writer.writeNext(item.getListValues());
             }
             writer.close();

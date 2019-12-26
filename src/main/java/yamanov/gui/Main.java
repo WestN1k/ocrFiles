@@ -7,8 +7,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.util.Objects;
-
 public class Main extends Application {
 
     public static void main(String[] args) {
@@ -20,7 +18,7 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("/main.fxml"));
         stage.setTitle("OCR file app");
 //        StackPane root = new StackPane();
-        stage.setScene(new Scene(root, 600, 300));
+        stage.setScene(new Scene(root, 800, 400));
         stage.show();
     }
 

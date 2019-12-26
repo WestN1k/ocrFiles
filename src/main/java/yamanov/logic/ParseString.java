@@ -7,10 +7,10 @@ public class ParseString {
 
     private Value item = new Value();
 
-    public Value parseData(String data) {
+    public Value parseData(String data, String fileName) {
         String headNumberPatternRegex = "[0-9]{10}";
         String headDatePatternRegex = "от\\s\\d{2}\\.\\d{2}\\.\\d{4}\\n";
-        String fioPatternRegex = ":\\s[А-Яа-я]+\\s[А-Яа-я]+\\s[А-Яа-я]{2,},";
+        String fioPatternRegex = "должника[:;].[а-яА-Я\\s]+,";  //":\\s[А-Яа-я]+\\s[А-Яа-я]+\\s[А-Яа-я]{2,},";
         String addressPatternRegex = "адрес:.*\\s*.+\\.\\n";
 
         Pattern numberPattern = Pattern.compile(headNumberPatternRegex);
@@ -22,6 +22,12 @@ public class ParseString {
         Matcher date = datePattern.matcher(data);
         Matcher fio = fioPattern.matcher(data);
         Matcher address = addressPattern.matcher(data);
+
+        if (!fileName.isEmpty()) {
+            item.setFilename(fileName);
+        } else {
+            System.out.println("filename not found");
+        }
 
         if (number.find()) {
             item.setNumber(number.group(0).strip());
@@ -36,13 +42,19 @@ public class ParseString {
         }
 
         if (fio.find()) {
-            item.setCustomer(fio.group(0).replaceAll("[:,.\\n\\r]+", "").strip());
+            item.setCustomer(fio.group(0).replaceAll("должника[;:\n\r]+", "")
+                    .replace(",", "")
+                    .replace("\n", "").strip());
         } else {
             System.out.println("fio not found");
         }
 
         if (address.find()) {
-            item.setAddress(address.group(0).replaceAll("адрес[:\\n\\r]+", "").strip());
+            item.setAddress(address.group(0).replaceAll("адрес[:;]+", "")
+                    .replace(",", "")
+                    .replace("\n", "")
+                    .replace(" -", "")
+                    .strip());
         } else {
             System.out.println("address not found");
         }

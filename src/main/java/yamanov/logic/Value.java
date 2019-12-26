@@ -4,18 +4,18 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class Value {
-    private final String filename;
+    private final StringProperty filename;
     private final StringProperty number;
     private final StringProperty date;
     private final StringProperty customer;
     private final StringProperty address;
 
-    public Value()  {
+    public Value() {
         this(null, null, null, null, null);
     }
 
     public Value(String filename, String number, String date, String customer, String address) {
-        this.filename = filename;
+        this.filename = new SimpleStringProperty(filename);
         this.number = new SimpleStringProperty(number);
         this.date = new SimpleStringProperty(date);
         this.customer = new SimpleStringProperty(customer);
@@ -23,8 +23,14 @@ public class Value {
     }
 
     public String getFilename() {
-        return filename;
+        return filename.get();
     }
+
+    public void setFilename(String filename) {
+        this.filename.set(filename);
+    }
+
+    public StringProperty fileNameProperty() { return filename; }
 
     public String getNumber() {
         return number.get();
@@ -75,6 +81,6 @@ public class Value {
     }
 
     public String[] getListValues() {
-        return new String[]{getNumber(), getDate(), getCustomer(), getAddress()};
+        return new String[]{getFilename(), getNumber(), getDate(), getCustomer(), getAddress()};
     }
 }
