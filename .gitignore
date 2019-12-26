@@ -1,5 +1,4 @@
 *.txt
 /target
 /.idea
-/tessdata
 /src/testFolder
