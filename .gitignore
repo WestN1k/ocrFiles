@@ -1,6 +1,7 @@
 *.txt
 /target
 /.idea
+/tessdata
 /src/testFolder
 /build
 /.gradle
