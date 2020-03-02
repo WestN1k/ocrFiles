@@ -9,10 +9,8 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import yamanov.logic.AddFromFile;
-import yamanov.logic.GetFileFromFolder;
-import yamanov.logic.ToCSV;
-import yamanov.logic.Value;
+import yamanov.database.entities.Inbox;
+import yamanov.logic.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -33,21 +31,23 @@ public class MainController {
     @FXML
     private TextField pathToSCV;
     @FXML
-    private TableView<Value> tableView;
+    private TableView<Inbox> tableView;
     @FXML
-    private TableColumn<Value, String> fileNameColumn;
+    private TableColumn<Inbox, String> fileNameColumn;
     @FXML
-    private TableColumn<Value, String> numberColumn;
+    private TableColumn<Inbox, String> numberColumn;
     @FXML
-    private TableColumn<Value, String> dateColumn;
+    private TableColumn<Inbox, String> dateColumn;
     @FXML
-    private TableColumn<Value, String> fioColumn;
-    @FXML
-    private TableColumn<Value, String> addressColumn;
+    private TableColumn<Inbox, String> fioColumn;
+//    @FXML
+//    private TableColumn<Inbox, String> addressColumn;
     @FXML
     private ProgressBar progressBar;
     @FXML
     private Button toSCVbutton;
+    @FXML
+    private Button toDataBaseButton;
 
     @FXML
     private void initialize() {
@@ -56,30 +56,32 @@ public class MainController {
 
         numberColumn.setCellValueFactory(cellData -> cellData.getValue().numberProperty());
         numberColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        numberColumn.setOnEditCommit((TableColumn.CellEditEvent<Value, String> t) ->
+        numberColumn.setOnEditCommit((TableColumn.CellEditEvent<Inbox, String> t) ->
                 (t.getTableView().getItems().get(t.getTablePosition().getRow())
-                ).setNumber(t.getNewValue())
+                ).setDocNumber(t.getNewValue())
         );
 
         dateColumn.setCellValueFactory(cellData -> cellData.getValue().dateProperty());
         dateColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        dateColumn.setOnEditCommit((TableColumn.CellEditEvent<Value, String> t) ->
+        dateColumn.setOnEditCommit((TableColumn.CellEditEvent<Inbox, String> t) ->
                 (t.getTableView().getItems().get(t.getTablePosition().getRow())
-                ).setDate(t.getNewValue())
+                ).setDocDate(t.getNewValue())
         );
 
         fioColumn.setCellValueFactory(cellData -> cellData.getValue().customerProperty());
         fioColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        fioColumn.setOnEditCommit((TableColumn.CellEditEvent<Value, String> t) ->
+        fioColumn.setOnEditCommit((TableColumn.CellEditEvent<Inbox, String> t) ->
                 (t.getTableView().getItems().get(t.getTablePosition().getRow())
                 ).setCustomer(t.getNewValue())
         );
-        addressColumn.setCellValueFactory(cellData -> cellData.getValue().addressProperty());
-        addressColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        addressColumn.setOnEditCommit((TableColumn.CellEditEvent<Value, String> t) ->
-                (t.getTableView().getItems().get(t.getTablePosition().getRow())
-                ).setAddress(t.getNewValue())
-        );
+//        addressColumn.setCellValueFactory(cellData -> cellData.getValue().addressProperty());
+//        addressColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+//        addressColumn.setOnEditCommit((TableColumn.CellEditEvent<Inbox, String> t) ->
+//                (t.getTableView().getItems().get(t.getTablePosition().getRow())
+//                ).setAddress(t.getNewValue())
+//        );
+
+
 
         tableView.setPlaceholder(new Label("Нет данных для отчета"));
     }
@@ -88,6 +90,7 @@ public class MainController {
     private void scanFolderAction(ActionEvent event) {
 
         final DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
         File dir = directoryChooser.showDialog(new Stage());
 
         GetFileFromFolder folder = new GetFileFromFolder();
@@ -105,18 +108,39 @@ public class MainController {
                 new FileChooser.ExtensionFilter("JPG", "*.jpg"),
                 new FileChooser.ExtensionFilter("PNG", "*.png")
         );
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
         File file = fileChooser.showOpenDialog(new Stage());
         if (file != null) {
             pathToSCV.setText(file.getAbsolutePath().replaceFirst("\\\\[\\w-]+\\.[\\w]+$", ""));
-            Value result = addFromFile.addFromFile(file.getAbsolutePath());
+            Inbox result = addFromFile.addFromFile(file.getAbsolutePath());
             addValueToTableInUI(result);
             toSCVbutton.setDisable(false);
         }
     }
 
     @FXML
+    private void saveToDatabase(ActionEvent event) {
+        ObservableList<Inbox> valuesList = tableView.getItems();
+
+        AddToDBApp app = new AddToDBApp();
+        app.showAddToDBDialog(valuesList);
+
+        // добавить проверку на заполнение таблицы
+        if (valuesList.isEmpty()) {
+            showAlert.showAlert("нет данных для переноса в базу", Alert.AlertType.CONFIRMATION);
+        } else {
+//            AddToDBApp app = new AddToDBApp();
+            app.showAddToDBDialog(valuesList);
+
+            for (Inbox item: valuesList) {
+                System.out.println(item.getDocDate() + "  " + item.getDocNumber() + "  " + item.getCustomer());
+            }
+        }
+    }
+
+    @FXML
     private void saveToSCV(ActionEvent event) throws FileNotFoundException, UnsupportedEncodingException {
-        ObservableList<Value> valuesList = tableView.getItems();
+        ObservableList<Inbox> valuesList = tableView.getItems();
         if (valuesList.isEmpty()) {
             showAlert.showAlert("нет данных для создания отчета", Alert.AlertType.CONFIRMATION);
         } else {
@@ -130,8 +154,8 @@ public class MainController {
         }
     }
 
-    private void addValueToTableInUI(Value item) {
-        ObservableList<Value> valuesList = tableView.getItems();
+    private void addValueToTableInUI(Inbox item) {
+        ObservableList<Inbox> valuesList = tableView.getItems();
         if (item != null) {
             valuesList.add(item);
         }
@@ -149,8 +173,8 @@ public class MainController {
         tableView.getAccessibleText();
         progressBarTask.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED,
                 event -> {
-                    List<Value> result = progressBarTask.getValue();
-                    for (Value item : result) {
+                    List<Inbox> result = progressBarTask.getValue();
+                    for (Inbox item : result) {
                         addValueToTableInUI(item);
                     }
                     toSCVbutton.setDisable(false);
@@ -163,7 +187,7 @@ public class MainController {
         parseFiles.start();
 
         progressBarTask.setOnFailed(e ->
-                showAlert.showAlert("Ошибка в потоке обработки: " + e.toString(), Alert.AlertType.ERROR)
+                showAlert.showAlert("Ошибка в потоке обработки: " + e.getSource().getException().toString(), Alert.AlertType.ERROR)
         );
     }
 }

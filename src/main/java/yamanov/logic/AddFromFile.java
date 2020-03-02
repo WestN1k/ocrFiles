@@ -1,6 +1,7 @@
 package yamanov.logic;
 
 import javafx.scene.control.Alert;
+import yamanov.database.entities.Inbox;
 import yamanov.gui.ShowAlert;
 
 import java.io.File;
@@ -15,7 +16,7 @@ public class AddFromFile {
         this.pathToTess = pathToTess;
     }
 
-    public Value addFromFile(String filePath) {
+    public Inbox addFromFile(String filePath) {
         FileOCR ocr = new FileOCR();
         ParseString parse = new ParseString();
         ShowAlert showAlert = new ShowAlert();
@@ -30,7 +31,8 @@ public class AddFromFile {
                         String result = ocr.getStringFromFile(filePath, pathToTess);
                         return parse.parseData(result, filename.toString());
                     } catch (Exception e) {
-                        showAlert.showAlert(e.getMessage(), Alert.AlertType.ERROR);
+                        e.printStackTrace();
+                        showAlert.showAlert("произошла непредвиденная ошибка", Alert.AlertType.ERROR);
                     }
                 }
             }

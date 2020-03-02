@@ -1,13 +1,14 @@
 package yamanov.logic;
 
 import com.opencsv.CSVWriter;
+import yamanov.database.entities.Inbox;
 
 import java.io.*;
 import java.util.List;
 
 public class ToCSV extends IOException {
 
-    public static boolean addToCSV(String csvPath, List<Value> values) throws FileNotFoundException, UnsupportedEncodingException {
+    public static boolean addToCSV(String csvPath, List<Inbox> values) throws FileNotFoundException, UnsupportedEncodingException {
         OutputStreamWriter file = new OutputStreamWriter(new FileOutputStream(csvPath, true), "Windows-1251");
         try {
             CSVWriter writer = new CSVWriter(file, ';',
@@ -15,7 +16,7 @@ public class ToCSV extends IOException {
                     CSVWriter.DEFAULT_ESCAPE_CHARACTER,
                     CSVWriter.DEFAULT_LINE_END
             );
-            for (Value item : values) {
+            for (Inbox item : values) {
                 writer.writeNext(item.getListValues());
             }
             writer.close();

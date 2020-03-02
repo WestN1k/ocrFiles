@@ -1,0 +1,47 @@
+plugins {
+    id 'org.openjfx.javafxplugin' version '0.0.8'
+    id 'java'
+    id 'application'
+}
+
+mainClassName = 'OCRfiles/yamanov.gui.Launcher'
+compileJava.options.encoding = 'UTF-8'
+
+javafx {
+    version = '11.0.1'
+    modules = ['javafx.controls', 'javafx.fxml', 'javafx.base']
+}
+
+version = '0.0.1'
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    compile('net.sourceforge.tess4j:tess4j:3.5.3'){
+        exclude group: 'org.ghost4j'
+        exclude group: 'org.apache.pdfbox'
+    }
+    compile('org.hibernate:hibernate-core:5.4.12.Final')
+    compile('org.postgresql:postgresql:42.2.10')
+    compile('com.opencsv:opencsv:5.1') {
+        transitive = false
+    }
+    compile('org.controlsfx:controlsfx:11.0.1') {
+        exclude group: 'org.openjfx'
+    }
+    compile('net.bytebuddy:byte-buddy:1.10.8')
+    compile('javax.xml.bind:jaxb-api:2.3.1')
+    compile('com.fasterxml:classmate:1.5.1')
+//    compile('com.sun.xml.bind:jaxb-core:2.3.0.1')
+}
+
+jar {
+    manifest.attributes("Main-Class": "yamanov.gui.Launcher")
+}
+
+run {
+    jvmArgs = ['--add-exports=javafx.base/com.sun.javafx.event=org.controlsfx.controls']
+}
