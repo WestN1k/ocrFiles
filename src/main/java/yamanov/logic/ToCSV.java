@@ -17,7 +17,7 @@ public class ToCSV extends IOException {
                     CSVWriter.DEFAULT_LINE_END
             );
             for (Inbox item : values) {
-                writer.writeNext(item.getListValues());
+                writer.writeNext(item.listValues());
             }
             writer.close();
             return true;

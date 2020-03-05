@@ -1,13 +1,10 @@
 package yamanov.database.entities;
 
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ObservableValue;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 @Entity
 @Table(name = "t_inbox")
@@ -15,52 +12,56 @@ public class Inbox {
     @Id
     @GeneratedValue(generator = "increment")
     @Column(name = "code")
-    private int code;
-    @Column(name = "prefix")
-    private char prefix;
-    @Column(name = "inboxnumber")
-    private int inboxNumber;
+    private Integer code;
     @Column(name = "inboxdate")
     private LocalDate inboxDate;
     @Column(name = "c_spr_doctype")
-    private int cSprDocType;
-    @Column(name = "docnumber")
-    private StringProperty docNumber;
+    private Integer cSprDocType;
     @Column(name = "docdate")
-    private StringProperty docDate;
+    private LocalDate docDate;
     @Column(name = "c_spr_organization")
-    private int cSprOrganization;
+    private Integer cSprOrganization;
     @Column(name = "signedby")
     private String signedBy;
-    @Column(name = "summary")
-    private StringProperty summary;
-    @Column(name = "c_spr_emloyee_executor")
-    private int cSprEmplyeeExecutor;
+    @Column(name = "c_spr_employee_executor")
+    private Integer cSprEmployeeExecutor;
     @Column(name = "executeupto")
-    private String executeUpTo;
+    private LocalDate executeUpTo;
     @Column(name = "executedin")
-    private String executedIn;
+    private LocalDate executedIn;
     @Column(name = "note")
     private String note;
     @Column(name = "object_count")
-    private int objectCount;
+    private Integer objectCount;
     @Column(name = "replyto")
     private String replyTo;
+    @Column(name = "docnumber")
+    private String docNumber;
 
     @Transient
-    private StringProperty filename;
+    @Column(name = "inboxnumber")
+    private Integer inboxNumber;
     @Transient
-    private StringProperty customer;
+    @Column(name = "prefix")
+    private char prefix;
+
+    @Transient
+    private StringProperty docNumberProperty;
+
+    @Transient
+    private StringProperty filenameProperty;
+
+    @Transient
+    private StringProperty customerProperty;
 
     public Inbox(){
         this(null,null,null );
     }
 
     public Inbox(String docNumber, String docDate, String customer) {
-        this.docNumber = new SimpleStringProperty(docNumber);
-        this.docDate = new SimpleStringProperty(docDate);
-        this.customer = new SimpleStringProperty(customer);
-        this.filename = new SimpleStringProperty();
+        this.docNumberProperty = new SimpleStringProperty(docNumber);
+        this.customerProperty = new SimpleStringProperty(customer);
+        this.filenameProperty = new SimpleStringProperty();
         this.inboxDate = LocalDate.now();
     }
 
@@ -68,16 +69,12 @@ public class Inbox {
         return code;
     }
 
-    public void setCode(int code) {
-        this.code = code;
+    public String filename() {
+        return filenameProperty.get();
     }
 
-    public String getFilename() {
-        return filename.get();
-    }
-
-    public void setFilename(String filename) {
-        this.filename.set(filename);
+    public void filenameSet(String filename) {
+        this.filenameProperty.set(filename);
     }
 
     public char getPrefix() {
@@ -88,51 +85,51 @@ public class Inbox {
         this.prefix = prefix;
     }
 
-    public int getInboxNumber() {
+    public Integer getInboxNumber() {
         return inboxNumber;
     }
 
-    public void setInboxNumber(int inboxNumber) {
+    public void setInboxNumber(Integer inboxNumber) {
         this.inboxNumber = inboxNumber;
     }
 
-    public String getInboxDate() {
-        return this.inboxDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+    public LocalDate getInboxDate() {
+        return this.inboxDate;
     }
 
     public void setInboxDate(LocalDate inboxDate) {
         this.inboxDate = inboxDate;
     }
 
-    public int getcSprDocType() {
+    public Integer getcSprDocType() {
         return cSprDocType;
     }
 
-    public void setcSprDocType(int cSprDocType) {
+    public void setcSprDocType(Integer cSprDocType) {
         this.cSprDocType = cSprDocType;
     }
 
     public String getDocNumber() {
-        return docNumber.get();
+        return docNumber;
     }
 
     public void setDocNumber(String docNumber) {
-        this.docNumber.set(docNumber);
+        this.docNumber= docNumber;
     }
 
-    public String getDocDate() {
-        return docDate.get();
+    public LocalDate getDocDate() {
+        return docDate;
     }
 
-    public void setDocDate(String docDate) {
-        this.docDate.set(docDate);
+    public void setDocDate(LocalDate docDate) {
+        this.docDate = docDate;
     }
 
-    public int getcSprOrganization() {
+    public Integer getcSprOrganization() {
         return cSprOrganization;
     }
 
-    public void setcSprOrganization(int cSprOrganization) {
+    public void setcSprOrganization(Integer cSprOrganization) {
         this.cSprOrganization = cSprOrganization;
     }
 
@@ -145,34 +142,34 @@ public class Inbox {
     }
 
     public String getSummary() {
-        return summary.get();
+        return "сведения о" + customer();
     }
 
     public void setSummary(String summary) {
-        this.summary.set(summary);
+        customerSet(summary);
     }
 
-    public int getcSprEmplyeeExecutor() {
-        return cSprEmplyeeExecutor;
+    public Integer getcSprEmployeeExecutor() {
+        return cSprEmployeeExecutor;
     }
 
-    public void setcSprEmplyeeExecutor(int cSprEmplyeeExecutor) {
-        this.cSprEmplyeeExecutor = cSprEmplyeeExecutor;
+    public void setcSprEmployeeExecutor(int cSprEmplyeeExecutor) {
+        this.cSprEmployeeExecutor = cSprEmplyeeExecutor;
     }
 
-    public String getExecuteUpTo() {
+    public LocalDate getExecuteUpTo() {
         return executeUpTo;
     }
 
-    public void setExecuteUpTo(String executeUpTo) {
+    public void setExecuteUpTo(LocalDate executeUpTo) {
         this.executeUpTo = executeUpTo;
     }
 
-    public String getExecutedIn() {
+    public LocalDate getExecutedIn() {
         return executedIn;
     }
 
-    public void setExecutedIn(String executedIn) {
+    public void setExecutedIn(LocalDate executedIn) {
         this.executedIn = executedIn;
     }
 
@@ -184,7 +181,7 @@ public class Inbox {
         this.note = note;
     }
 
-    public int getObjectCount() {
+    public Integer getObjectCount() {
         return objectCount;
     }
 
@@ -200,35 +197,31 @@ public class Inbox {
         this.replyTo = replyTo;
     }
 
-    public String getCustomer() {
-        return customer.get();
+    public String customer() {
+        return customerProperty.get();
     }
 
-    public void setCustomer(String customer) {
-        this.customer.set(customer);
+    public void customerSet(String customer) {
+        this.customerProperty.set(customer);
+        this.replyTo = "сведения о " + customer;
     }
 
-    public String getFormatedSummary() {
-        return "сведения о" + getCustomer();
-    }
-
-    public String[] getListValues() {
-        return new String[]{getFilename(), getDocNumber(), getDocDate(), getCustomer()};
+    public String[] listValues() {
+        return new String[]{filename(), getDocNumber(), getDocDate().toString(), customer()};
     }
 
     public StringProperty numberProperty() {
-        return docNumber;
-    }
-
-    public StringProperty dateProperty() {
-        return docDate;
+        return new SimpleStringProperty(getDocNumber());
     }
 
     public StringProperty customerProperty() {
-        return customer;
+        return customerProperty;
     }
 
+    public LocalDate localDocDate() {
+        return docDate;
+    }
     public StringProperty fileNameProperty() {
-        return filename;
+        return filenameProperty;
     }
 }

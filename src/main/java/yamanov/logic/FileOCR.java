@@ -6,6 +6,7 @@ import net.sourceforge.tess4j.TesseractException;
 
 import java.io.File;
 
+
 public class FileOCR {
 
     public String getStringFromFile(String filePath, String pathToTessdata) {

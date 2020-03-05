@@ -16,10 +16,6 @@ public class InboxDao implements DaoInterface<Inbox, Integer> {
 
     public SessionFactory getSessionFactory(){
         return HibernateUtils.getSessionFactory();
-//        Configuration configuration = new Configuration().configure();
-//        StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder()
-//                .applySettings(configuration.getProperties());
-//        return configuration.buildSessionFactory(builder.build());
     }
 
     public Session openCurrentSession() {

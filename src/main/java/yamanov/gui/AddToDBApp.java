@@ -25,7 +25,7 @@ public class AddToDBApp {
             addToDBController.setDialogStage(addToDBStage);
             addToDBController.setInboxList(inboxList);
             addToDBStage.showAndWait();
-            return true;
+            return addToDBController.handleOk();
         } catch (IOException e) {
             e.printStackTrace();
             return false;

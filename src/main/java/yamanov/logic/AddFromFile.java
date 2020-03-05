@@ -5,6 +5,7 @@ import yamanov.database.entities.Inbox;
 import yamanov.gui.ShowAlert;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 

@@ -2,12 +2,17 @@ package yamanov.logic;
 
 import yamanov.database.entities.Inbox;
 
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ParseString {
 
     private Inbox item = new Inbox();
+    private final static DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     public Inbox parseData(String data, String fileName) {
         String headNumberPatternRegex = "[0-9]{10}";
@@ -26,7 +31,7 @@ public class ParseString {
 //        Matcher address = addressPattern.matcher(data);
 
         if (fileName != null && !fileName.isEmpty()){
-            item.setFilename(fileName.trim());
+            item.filenameSet(fileName.trim());
         } else {
             System.out.println("filename not found");
         }
@@ -38,13 +43,16 @@ public class ParseString {
         }
 
         if (date.find()) {
-            item.setDocDate(date.group(0).replaceAll("от", "").trim().strip());
-        } else {
-            System.out.println("date not found");
+            try {
+                String stringDocDate = date.group(0).replaceAll("от", "").trim().strip();
+                item.setDocDate(LocalDate.parse(stringDocDate, DATE_FORMATTER));
+            } catch (DateTimeParseException e) {
+                e.printStackTrace();
+            }
         }
 
         if (fio.find()) {
-            item.setCustomer(fio.group(0).replaceAll("должника[;:\n\r]+", "")
+            item.customerSet(fio.group(0).replaceAll("должника[;:\n\r]+", "")
                     .replace(",", "")
                     .replace("\n", "").strip());
         } else {

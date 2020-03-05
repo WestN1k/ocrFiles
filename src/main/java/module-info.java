@@ -17,6 +17,7 @@ module OCRfiles {
 
     exports yamanov.gui;
     exports yamanov.logic;
+    exports yamanov.database.entities;
     opens yamanov.database.entities to org.hibernate.orm.core;
     opens yamanov.gui to javafx.fxml;
     opens yamanov.database;

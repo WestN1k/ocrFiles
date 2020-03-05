@@ -4,15 +4,14 @@
 
 <hibernate-configuration>
     <session-factory>
-        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQL9Dialect</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQL10Dialect</property>
         <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
-        <property name="connection.url">jdbc:postgresql://192.168.50.70/wftest</property>
+        <property name="connection.url">jdbc:postgresql://192.168.50.70/wftest?characterEncoding=utf8</property>
         <property name="connection.username">postgres</property>
         <property name="connection.password">88005553535</property>
 <!--        <property name="hbm2ddl.auto">update</property> &lt;!&ndash; create / create-drop / update &ndash;&gt;-->
         <property name="show_sql">true</property> <!-- Show SQL in console -->
-        <property name="format_sql">true</property> <!-- Show SQL formatted -->
-
+<!--        <property name="format_sql">true</property> &lt;!&ndash; Show SQL formatted &ndash;&gt;-->
         <mapping class="yamanov.database.entities.Inbox"/>
         <mapping class="yamanov.database.entities.SprOrganization"/>
 

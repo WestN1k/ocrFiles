@@ -1,23 +1,38 @@
 package yamanov.gui;
 
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.KeyCode;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Callback;
+import net.bytebuddy.asm.Advice;
 import yamanov.database.entities.Inbox;
 import yamanov.logic.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 
@@ -37,7 +52,7 @@ public class MainController {
     @FXML
     private TableColumn<Inbox, String> numberColumn;
     @FXML
-    private TableColumn<Inbox, String> dateColumn;
+    private TableColumn<Inbox, LocalDate> dateColumn;
     @FXML
     private TableColumn<Inbox, String> fioColumn;
 //    @FXML
@@ -48,6 +63,7 @@ public class MainController {
     private Button toSCVbutton;
     @FXML
     private Button toDataBaseButton;
+
 
     @FXML
     private void initialize() {
@@ -61,18 +77,15 @@ public class MainController {
                 ).setDocNumber(t.getNewValue())
         );
 
-        dateColumn.setCellValueFactory(cellData -> cellData.getValue().dateProperty());
-        dateColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        dateColumn.setOnEditCommit((TableColumn.CellEditEvent<Inbox, String> t) ->
-                (t.getTableView().getItems().get(t.getTablePosition().getRow())
-                ).setDocDate(t.getNewValue())
-        );
+        dateColumn.setCellValueFactory(param -> new SimpleObjectProperty<LocalDate>(new DatePicker(param.getValue().localDocDate()).getValue()));
+        dateColumn.setCellFactory(LocalDateTableCell :: new);
+        dateColumn.setOnEditCommit(event -> event.getTableView().getSelectionModel().getSelectedItem().setDocDate(event.getNewValue()));
 
         fioColumn.setCellValueFactory(cellData -> cellData.getValue().customerProperty());
         fioColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         fioColumn.setOnEditCommit((TableColumn.CellEditEvent<Inbox, String> t) ->
                 (t.getTableView().getItems().get(t.getTablePosition().getRow())
-                ).setCustomer(t.getNewValue())
+                ).customerSet(t.getNewValue())
         );
 //        addressColumn.setCellValueFactory(cellData -> cellData.getValue().addressProperty());
 //        addressColumn.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -80,8 +93,6 @@ public class MainController {
 //                (t.getTableView().getItems().get(t.getTablePosition().getRow())
 //                ).setAddress(t.getNewValue())
 //        );
-
-
 
         tableView.setPlaceholder(new Label("Нет данных для отчета"));
     }
@@ -119,21 +130,17 @@ public class MainController {
     }
 
     @FXML
-    private void saveToDatabase(ActionEvent event) {
+    private void saveToDatabase(ActionEvent event) throws UnsupportedEncodingException {
         ObservableList<Inbox> valuesList = tableView.getItems();
-
-        AddToDBApp app = new AddToDBApp();
-        app.showAddToDBDialog(valuesList);
-
         // добавить проверку на заполнение таблицы
         if (valuesList.isEmpty()) {
             showAlert.showAlert("нет данных для переноса в базу", Alert.AlertType.CONFIRMATION);
         } else {
-//            AddToDBApp app = new AddToDBApp();
-            app.showAddToDBDialog(valuesList);
-
-            for (Inbox item: valuesList) {
-                System.out.println(item.getDocDate() + "  " + item.getDocNumber() + "  " + item.getCustomer());
+            AddToDBApp app = new AddToDBApp();
+            boolean res = app.showAddToDBDialog(valuesList);
+            if (res) {
+                tableView.getItems().clear();
+                tableView.setPlaceholder(new Label("Нет данных для отчета"));
             }
         }
     }
@@ -189,5 +196,10 @@ public class MainController {
         progressBarTask.setOnFailed(e ->
                 showAlert.showAlert("Ошибка в потоке обработки: " + e.getSource().getException().toString(), Alert.AlertType.ERROR)
         );
+    }
+
+    public String encodeToUTF8(String stringToEncode) {
+        byte[] stringBytes = stringToEncode.getBytes(StandardCharsets.ISO_8859_1);
+        return new String(stringBytes, StandardCharsets.UTF_8);
     }
 }
