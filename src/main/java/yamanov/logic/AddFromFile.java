@@ -21,6 +21,7 @@ public class AddFromFile {
         FileOCR ocr = new FileOCR();
         ParseString parse = new ParseString();
         ShowAlert showAlert = new ShowAlert();
+        System.out.println(pathToTess);
         File pathToTessdata = new File(pathToTess);
         Path path = Paths.get(filePath);
         Path filename = path.getFileName();

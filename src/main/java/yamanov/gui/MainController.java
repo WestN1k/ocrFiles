@@ -24,24 +24,21 @@ import yamanov.logic.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 public class MainController {
 
     private ShowAlert showAlert = new ShowAlert();
-    private final static String PATH_TO_TESSDATA = new File(".").toString() + "/tessdata";
     private final static String CSV_NAME = "/order.csv";
-    private AddFromFile addFromFile = new AddFromFile(PATH_TO_TESSDATA);
+    private AddFromFile addFromFile = new AddFromFile(getPathToFolder("tessdata"));
 
     @FXML
     private TextField pathToSCV;
@@ -101,7 +98,7 @@ public class MainController {
     private void scanFolderAction(ActionEvent event) {
 
         final DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+        directoryChooser.setInitialDirectory(new File(Objects.requireNonNull(getPathToFolder(""))));
         File dir = directoryChooser.showDialog(new Stage());
 
         GetFileFromFolder folder = new GetFileFromFolder();
@@ -119,7 +116,7 @@ public class MainController {
                 new FileChooser.ExtensionFilter("JPG", "*.jpg"),
                 new FileChooser.ExtensionFilter("PNG", "*.png")
         );
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+        fileChooser.setInitialDirectory(new File(Objects.requireNonNull(getPathToFolder(""))));
         File file = fileChooser.showOpenDialog(new Stage());
         if (file != null) {
             pathToSCV.setText(file.getAbsolutePath().replaceFirst("\\\\[\\w-]+\\.[\\w]+$", ""));
@@ -161,6 +158,16 @@ public class MainController {
         }
     }
 
+    private static String getPathToFolder(String folderName){
+        try {
+            File mainClassFile = new File(Launcher.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+            return  mainClassFile.getParent() + File.separator + folderName;
+        } catch (URISyntaxException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     private void addValueToTableInUI(Inbox item) {
         ObservableList<Inbox> valuesList = tableView.getItems();
         if (item != null) {
@@ -193,6 +200,7 @@ public class MainController {
         parseFiles.setDaemon(true);
         parseFiles.start();
 
+        //переработать, т.к. реагирует и на отсутствие папки tessdata, обработчик tess4j, в этом случае не срабатывает
         progressBarTask.setOnFailed(e ->
                 showAlert.showAlert("Ошибка в потоке обработки: " + e.getSource().getException().toString(), Alert.AlertType.ERROR)
         );

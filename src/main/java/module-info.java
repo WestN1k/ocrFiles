@@ -14,7 +14,6 @@ module OCRfiles {
     requires java.xml;
     requires com.sun.xml.bind;
     requires com.fasterxml.classmate;
-
     exports yamanov.gui;
     exports yamanov.logic;
     exports yamanov.database.entities;
