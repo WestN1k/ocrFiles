@@ -1,8 +1,7 @@
 *.txt
-/target
-/.idea
-/tessdata
-/src/testFolder
-/build
-/.gradle
-/testFolder
+target/
+.idea/
+src/testFolder/
+build/
+.gradle/
+testFolder/
